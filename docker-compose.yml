@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres
+    container_name: kontener
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: service  # Nazwa bazy danych
+    ports:
+      - "5432:5432"
+    volumes:
+     # - pgdata:/var/lib/postgresql/data  # 1. Trwałe dane PostgreSQL - kontener po ponownym utworzeniu nie zainicjuje na nowo bazy w sytuacji gdy istnieje juz volumen.
+                                          # Aby zainicjować nową baze naleąy usunąć wcześniejszy volumen.
+      - /var/lib/postgresql/data  # 2. Dane będą przechowywane tylko w trakcie życia kontenera.
+                                  # Po usunięciu kontenera dane zostaną również usunięte.
+      - ./db-init:/docker-entrypoint-initdb.d
+    #tmpfs:  # 3. Wszystkie dane są tymczasowe i znikają, gdy kontener się zatrzyma
+     # - /var/lib/postgresql/data  # dane będą przechowywane tylko w pamięci
+
+#volumes:
+ # pgdata: 1.
+
+  # Aby uruchomić terminal kontenera ...> docker exec -it kontener psql -U myuser -d service
